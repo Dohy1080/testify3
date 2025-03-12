@@ -1,4 +1,5 @@
 ﻿using BusinessLogic.Interface;
+using BusinessLogic.UseCase;
 using CoreEntities.Models;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Http;
@@ -26,21 +27,22 @@ namespace StudentTeacherManagementBE.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateScore(int id, [FromBody] Score studentScore)
+        public async Task<IActionResult> UpdateScore(Guid id, [FromBody] Score studentScore)
         {
-            if (id != Score.Id)
+            if (studentScore.ID != id)
             {
-                return BadRequest("ID mismatch");
+                return BadRequest("Score ID mismatch.");
             }
 
-            var existingScore = await _ScoreService.GetScoreByIdAsync(id);
-            if (existingScore == null)
+            try
             {
-                return NotFound();
+                await _ScoreService.UpdateScoreAsync(studentScore);
+                return NoContent(); // 204 No Content
             }
-
-            await _ScoreService.UpdateScoreAsync(studentScore);
-            return NoContent();  // Trả về 204 No Content
+            catch (KeyNotFoundException)
+            {
+                return NotFound("Score not found.");
+            }
         }
     }
 }

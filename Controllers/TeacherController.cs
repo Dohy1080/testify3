@@ -22,6 +22,45 @@ namespace StudentTeacherManagementBE.Controllers
             return this._teacherService.GetAllTeacher();
         }
 
-    
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteTeacher(Guid id)
+        {
+            try
+            {
+                await _teacherService.DeleteTeacher(id);
+                return NoContent(); // Trả về 204 No Content
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound("Teacher not found.");
+            }
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetTeacherById(Guid id)
+        {
+            var teacher = await _teacherService.GetTeacherById(id);
+            if (teacher == null)
+            {
+                return NotFound("Teacher not found.");
+            }
+
+            return Ok(teacher);
+        }
+
+        [HttpPost("add")]
+        public async Task<IActionResult> AddTeacher([FromBody] Teacher teacherDto)
+        {
+            if (teacherDto == null)
+            {
+                return BadRequest("Teacher data is null.");
+            }
+
+            await _teacherService.AddTeacher(teacherDto);
+            return CreatedAtAction(nameof(AddTeacher), new { name = teacherDto.Name }, teacherDto);
+        }
+
+
+
     }
 };

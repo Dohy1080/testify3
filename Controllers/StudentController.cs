@@ -1,4 +1,5 @@
 ﻿using BusinessLogic.Interface;
+using BusinessLogic.UseCase;
 using CoreEntities.Models;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Http;
@@ -55,7 +56,7 @@ namespace StudentTeacherManagementBE.Controllers
 
 
 
-        [HttpGet("phantrang")]
+        [HttpGet("PageNumber")]
         public async Task<IActionResult> GetStudents([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
             var students = _studentService.GetStudents(pageNumber, pageSize);
@@ -104,6 +105,7 @@ namespace StudentTeacherManagementBE.Controllers
             var students =  _studentService.GetAllStudent();
             return Ok(students); // Trả về danh sách học sinh
         }
+
 
     }
     
