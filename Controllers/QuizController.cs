@@ -1,5 +1,6 @@
 ﻿using BusinessLogic.Interface;
 using CoreEntities.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,6 +8,8 @@ namespace StudentTeacherManagementBE.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
+    
     public class QuizController : ControllerBase
     {
         private readonly IQuizService _quizService;
@@ -39,7 +42,7 @@ namespace StudentTeacherManagementBE.Controllers
             }
 
             var createdQuiz = await _quizService.AddQuizAsync(quiz);
-            return CreatedAtAction(nameof(GetQuizzes), new { id = createdQuiz.Id }, createdQuiz);
+            return CreatedAtAction(nameof(GetQuizzes), new { id = createdQuiz.ID }, createdQuiz);
         }
 
         [HttpDelete("{id}")]
@@ -51,6 +54,34 @@ namespace StudentTeacherManagementBE.Controllers
                 return NotFound(); // Không tìm thấy quiz
             }
             return NoContent(); // Xóa thành công
+        }
+
+        [HttpPost("submit")]
+        public async Task<IActionResult> SubmitQuiz([FromBody] SubmitQuiz submitQuizDto)
+        {
+            try
+            {
+                var result = await _quizService.SubmitQuizAsync(submitQuizDto);
+                return Ok(result); // Happy case
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message); // Unhappy case
+            }
+
+
+        }
+
+        [HttpPost("create")]
+        public async Task<IActionResult> CreateQuiz([FromBody] CreateQuiz createQuizDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var quiz = await _quizService.CreateQuizAsync(createQuizDto);
+            return CreatedAtAction(nameof(CreateQuiz), new { id = quiz.ID }, quiz);
         }
     }
 }

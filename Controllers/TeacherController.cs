@@ -1,6 +1,7 @@
 ﻿using BusinessLogic.Interface;
 using BusinessLogic.TeacherUseCase;
 using CoreEntities.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Runtime.CompilerServices;
@@ -9,11 +10,12 @@ namespace StudentTeacherManagementBE.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [Authorize]
     public class TeacherController : ControllerBase
     {
         private readonly ITeacherService _teacherService;
-        public TeacherController(ITeacherService teacherService) 
-        { 
+        public TeacherController(ITeacherService teacherService)
+        {
             this._teacherService = teacherService;
         }
         [HttpGet("get-all-teacher")]
@@ -59,6 +61,10 @@ namespace StudentTeacherManagementBE.Controllers
             await _teacherService.AddTeacher(teacherDto);
             return CreatedAtAction(nameof(AddTeacher), new { name = teacherDto.Name }, teacherDto);
         }
+
+        //-------API Question-------
+
+        
 
 
 

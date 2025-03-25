@@ -1,4 +1,5 @@
 ﻿using BusinessLogic.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,6 +7,7 @@ namespace StudentTeacherManagementBE.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class NotificationController : ControllerBase
     {
         private readonly INotificationService _notificationService;

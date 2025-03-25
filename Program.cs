@@ -2,15 +2,18 @@ using BusinessLogic.Interface;
 using BusinessLogic.Repository;
 using BusinessLogic.TeacherUseCase;
 using BusinessLogic.UseCase;
+using CoreBusiness.Config;
 using CoreEntities.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using SqlServerPlugin;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using UseCases.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +23,8 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<ITeacherRepository, TeacherRepository>();
+builder.Services.AddScoped<ITeacherService, TeacherService>();
 builder.Services.AddScoped<IScoreRepository, ScoreRepository>();
 builder.Services.AddScoped<IScoreService, BusinessLogic.Interface.ScoreService>();
 builder.Services.AddScoped<IQuizRepository, QuizRepository>();
@@ -29,6 +34,18 @@ builder.Services.AddScoped<IClassService, ClassService>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
+builder.Services.AddScoped<IAuthenRepository, AuthenRepository>();
+builder.Services.AddScoped<IGradeRepository, GradeRepository>();
+builder.Services.AddScoped<IGradeService, GradeService>();
+builder.Services.AddScoped<ISubjectRepository, SubjectRepository>();
+builder.Services.AddScoped<ISubjectService, SubjectService>();
+builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
+builder.Services.AddScoped<IQuestionService, QuestionService>();
+builder.Services.AddScoped<IAnswerRepository, AnswerRepository>();
+builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
+builder.Services.AddScoped<IFeedbackService, FeedbackService>();
+builder.Services.AddScoped<IAnswerService, AnswerService>();
+builder.Services.AddScoped<IAuthenService, BusinessLogic.UseCase.AuthenService>();
 builder.Services.AddScoped<IStudentService, BusinessLogic.Interface.StudentService>();
 
 
@@ -36,27 +53,74 @@ builder.Services.AddDbContext<CustomDBContext>(options => options.UseSqlServer(
     builder.Configuration.GetConnectionString("MyConnection")
     ));
 
-builder.Services.AddAuthentication(options =>
+//JWT
+builder.Services.AddAuthentication(optiones =>
 {
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(o =>
+    optiones.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    optiones.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    optiones.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+            .AddJwtBearer(o =>
+            {
+                o.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidIssuer = "https://localhost:7264",
+                    ValidAudience = "https://localhost:7264",
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWTSetting:Key"])),
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidateLifetime = false,
+                    ClockSkew = TimeSpan.Zero,
+                };
+            });
+
+builder.Services.AddCors(options =>
 {
-    o.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey
-        (Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = false,
-        ValidateIssuerSigningKey = true
-    };
+    options.AddPolicy("AllowAllOrigins",
+            builder =>
+            {
+                builder.AllowAnyOrigin()
+                       .AllowAnyHeader()
+                       .AllowAnyMethod();
+            });
 });
 
-builder.Services.AddAuthorization();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebAPIv7", Version = "v1" });
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description =
+            "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 12345abcdef\"",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            },
+                            Scheme = "oauth2",
+                            Name = "Bearer",
+                            In = ParameterLocation.Header,
+
+                        },
+                        new List<string>()
+                    }
+                });
+});
+
+var configuration = Configuration.GetInstance();
+configuration.JWTKey = builder.Configuration.GetValue<string>("JWTSetting:Key");
 
 var app = builder.Build();
 
@@ -70,6 +134,8 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseCors("AllowAllOrigins");
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
@@ -79,37 +145,3 @@ app.MapControllers();
 app.Run();
 
 
-app.MapPost("/security/createToken",
-[AllowAnonymous] (User user) =>
-{
-    if (user.Username == "huydan" && user.Password == "huydan0810")
-    {
-        var issuer = builder.Configuration["Jwt:Issuer"];
-        var audience = builder.Configuration["Jwt:Audience"];
-        var key = Encoding.ASCII.GetBytes
-        (builder.Configuration["Jwt:Key"]);
-        var tokenDescriptor = new SecurityTokenDescriptor
-        {
-            Subject = new ClaimsIdentity(new[]
-            {
-                new Claim("Id", Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Sub, user.Username),
-                new Claim(JwtRegisteredClaimNames.Email, user.Username),
-                new Claim(JwtRegisteredClaimNames.Jti,
-                Guid.NewGuid().ToString())
-             }),
-            Expires = DateTime.UtcNow.AddMinutes(5),
-            Issuer = issuer,
-            Audience = audience,
-            SigningCredentials = new SigningCredentials
-            (new SymmetricSecurityKey(key),
-            SecurityAlgorithms.HmacSha512Signature)
-        };
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var token = tokenHandler.CreateToken(tokenDescriptor);
-        var jwtToken = tokenHandler.WriteToken(token);
-        var stringToken = tokenHandler.WriteToken(token);
-        return Results.Ok(stringToken);
-    }
-    return Results.Unauthorized();
-});

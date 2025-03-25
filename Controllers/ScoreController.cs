@@ -1,6 +1,7 @@
 ﻿using BusinessLogic.Interface;
 using BusinessLogic.UseCase;
 using CoreEntities.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,7 @@ namespace StudentTeacherManagementBE.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class StudentScoreController : ControllerBase
     {
         private readonly IScoreService _ScoreService;

@@ -1,4 +1,5 @@
-﻿using CoreEntities.Models;
+﻿using BusinessLogic.Repository;
+using CoreEntities.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -11,61 +12,20 @@ namespace testify3.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Student")]
+
     public class AuthController : ControllerBase
     {
-        private readonly IConfiguration _configuration;
-
-        public AuthController(IConfiguration configuration)
+        private IAuthenRepository _authenRepository;
+        public AuthController(IAuthenRepository authenRepository)
         {
-            _configuration = configuration;
+            this._authenRepository = authenRepository;
         }
 
-        // POST: api/auth/login
-        [AllowAnonymous]
-        [HttpPost("login")]
-        public IActionResult Login([FromBody] User user)
+        [HttpGet("get")]
+        public IEnumerable<User> Get()
         {
-            // Giả lập kiểm tra tài khoản
-            if (user.Username == "huydan" && user.Password == "huydan0810")
-            {
-                var token = GenerateJwtToken(user);
-                return Ok(new { Token = token });
-            }
-
-            return Unauthorized("Invalid credentials");
-        }
-
-        // Hàm tạo JWT Token
-        private string GenerateJwtToken(User user)
-        {
-            var issuer = _configuration["Jwt:Issuer"];
-            var audience = _configuration["Jwt:Audience"];
-            var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]);
-
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new[]
-                {
-                    new Claim("Id", Guid.NewGuid().ToString()),
-                    new Claim(JwtRegisteredClaimNames.Sub, user.Username),
-                    new Claim(JwtRegisteredClaimNames.Email, user.Username),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-                }),
-                Expires = DateTime.UtcNow.AddMinutes(30),
-                Issuer = issuer,
-                Audience = audience,
-                SigningCredentials = new SigningCredentials(
-                    new SymmetricSecurityKey(key),
-                    SecurityAlgorithms.HmacSha512Signature
-                )
-            };
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
+            return _authenRepository.GetUser();
         }
     }
-
-
-
 }

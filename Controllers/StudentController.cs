@@ -1,6 +1,7 @@
 ﻿using BusinessLogic.Interface;
 using BusinessLogic.UseCase;
 using CoreEntities.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,7 @@ namespace StudentTeacherManagementBE.Controllers
 {
       [Route("[controller]")]
       [ApiController]
+      [Authorize]
       public class StudentController : ControllerBase
         {
         private readonly IStudentService _studentService;
@@ -59,8 +61,8 @@ namespace StudentTeacherManagementBE.Controllers
         [HttpGet("PageNumber")]
         public async Task<IActionResult> GetStudents([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
-            var students = _studentService.GetStudents(pageNumber, pageSize);
-            var totalCount =  _studentService.GetTotalCount();
+            var students = await _studentService.GetStudents(pageNumber, pageSize);
+            var totalCount =  await _studentService.GetTotalCount();
 
             var response = new
             {
