@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -19,7 +20,12 @@ namespace CoreEntities.Models
         [Column("studentid")]
         public Guid StudentID { get; set; }
         [Column("teacherid")]
-        public Guid TeacherID { get; set; }
-
+        public Guid? TeacherID { get; set; }
+        [ValidateNever]
+        public Student Students { get; set; } // Mối quan hệ đến Student
+        public Teacher Teachers { get; set; } // Mối quan hệ đến Teacher
     }
+
+
+
 }

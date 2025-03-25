@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -14,10 +15,10 @@ namespace CoreEntities.Models
         public Guid Id { get; set; }
         [Column("name")]
         public string? Name { get; set; }
-        [Column("phone_number")]
-        public string? PhoneNumber { get; set; }
-        [Column("subject")]
-        public string? Subject { get; set; }
+        [Column("phonenumber")]
+        public string? phoneNumber { get; set; }
+        [Column("subjectid")]
+        public Guid SubjectID { get; set; }
         [Column("birthdate")]
         public DateTime BirthDate { get; set; }
         [Column("gender")]
@@ -28,7 +29,10 @@ namespace CoreEntities.Models
         public DateTime FirstLogin { get; set; }
         [Column("email")]
         public string? Email { get; set; }
-
+        [ValidateNever]
+        public IEnumerable<Teacher_Student> Teacher_Students { get; set; }
+        public ICollection<Notification> Notifications { get; set; }
+        public IEnumerable<Teacher_Class> Teacher_Classes { get; set; }
+        public ICollection<Feedback> Feedbacks { get; set; }
     }
 }
- 

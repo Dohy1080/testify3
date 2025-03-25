@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -30,5 +31,12 @@ namespace CoreEntities.Models
             public Guid Subject { get; set; }
             [Column("studentcode")]
             public string? StudentCode { get; set; }
+            [ValidateNever]
+            public IEnumerable<Teacher_Student> Teacher_Students { get; set; }
+            public ICollection<Notification> Notifications { get; set; }
+            public IEnumerable<StudentAnswer> StudentAnswers { get; set; }
+            public ICollection<Feedback> Feedbacks { get; set; }
+            public ICollection<Score> Scores { get; set; }
+            // public Class Classes { get; set; }
     }
 }

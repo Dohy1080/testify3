@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -15,7 +16,8 @@ namespace CoreEntities.Models
         [Column("name")]
         public string? Name { get; set; }
         [Column("image")]
-        public byte[]? Image { get; set; }
-
+        public string? Image { get; set; }
+        [ValidateNever]
+        public ICollection<Feedback> Feedbacks { get; set; }
     }
 }

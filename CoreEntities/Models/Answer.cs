@@ -8,14 +8,16 @@ using System.Threading.Tasks;
 
 namespace CoreEntities.Models
 {
-    [Table("Grade")]
-    public class Grade
+    public class Answer
     {
-        [Column("id")]
         public Guid Id { get; set; }
-        [Column("name")]
-        public string? Name { get; set; }
+        public string? Text { get; set; }
+        public bool Incorrect { get; set; }
+        public Guid QuestionID { get; set; }
+
         [ValidateNever]
-        public ICollection<Class> Classes { get; set; }
+        public IEnumerable<StudentAnswer> StudentAnswers { get; set; }
+        public Question Questions { get; set; }
+
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -15,10 +16,14 @@ namespace CoreEntities.Models
         [Column("name")]
         public string Name { get; set; }
         [Column("totalstudent")]
-        public string TotalStudent {  get; set; }
-        [Column("garadeid")]
-        public Guid GradeID { get; set; }
-        [Column("classid")]
-        public Guid ClassID { get; set; }
+        public int TotalStudent {  get; set; }
+        [Column("gradeID")]
+        public Guid? GradeID{ get; set; }
+        [ValidateNever]
+       
+
+        public Grade Grades { get; set; }
+        public IEnumerable<Teacher_Class> Teacher_Classes { get; set; }
+        // public ICollection<Student> Students { get; set; }
     }
 }

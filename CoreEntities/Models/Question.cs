@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -10,13 +11,14 @@ namespace CoreEntities.Models
     [Table("Question")]
     public class Question
     {
-        [Column("id")]
         public Guid ID { get; set; }
-        [Column("timelimit")]
-        public DateTime TimeLimit { get; set; }
-        [Column("content")]
-        public string Content { get; set; }
-        [Column("quizid")]
-        public Guid QuizID { get; set; }    
+        public Guid QuizID { get; set; }
+        public DateTime? TimeLimit { get; set; }
+        public string? Content { get; set; }
+
+        [ValidateNever]
+        public Answer Answers {  get; set; }
+        public Quiz Quizzes { get; set; }
+
     }
 }

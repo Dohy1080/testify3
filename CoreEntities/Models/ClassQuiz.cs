@@ -8,16 +8,16 @@ using System.Threading.Tasks;
 
 namespace CoreEntities.Models
 {
-    [Table("StudentAnswer")]
-    public class StudentAnswer
+    [Table("Class_Quiz")]
+    public class ClassQuiz
     {
-        [Column("studentid")]
-        public Guid StudentID { get; set; }
-        [Column("answerid")]
-        public Guid AnswerID { get; set; }
+        public Guid ClassID { get; set; }
+        public Guid QuizID { get; set; }
 
         [ValidateNever]
-        public Student Students {  get; set; }
-        public Answer Answers {  get; set; }
+        public List<Quiz> Quizzes { get; set; }
+
+      
+        public List<Class> Class { get; set; }
     }
 }
