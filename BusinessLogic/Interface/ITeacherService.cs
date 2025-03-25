@@ -11,10 +11,11 @@ namespace BusinessLogic.Interface
     public interface ITeacherService
     {
         public List<Teacher> GetAllTeacher();
-        
-        
+        Task DeleteTeacher(Guid id);
+        Task<Teacher> GetTeacherById(Guid id);
+        Task AddTeacher(Teacher teacher);
 
     }
 
-    
+
 }

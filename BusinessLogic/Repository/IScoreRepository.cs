@@ -12,5 +12,7 @@ namespace BusinessLogic.Repository
         Task<IEnumerable<Score>> GetAllScoresAsync();
         Task<Score> GetScoreByIdAsync(int id);
         Task UpdateScoreAsync(Score studentScore);
+        Task<Score> GetScoreByIdAsync(Guid id);
+     
     }
 }

@@ -10,5 +10,10 @@ namespace BusinessLogic.Repository
     public interface ITeacherRepository
     {
         public List<Teacher> GetAllTeachers();
-    }   
+        Task<Teacher> GetTeacherById(Guid id);
+        Task DeleteTeacher(Teacher teacher);
+        Task AddTeacher(Teacher teacher);
+
+
+    }
 }

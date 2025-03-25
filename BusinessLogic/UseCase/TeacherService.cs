@@ -24,5 +24,42 @@ namespace BusinessLogic.UseCase
             return _teacherRepository.GetAllTeachers();
         }
 
+        public async Task DeleteTeacher(Guid id)
+        {
+            var teacher = await _teacherRepository.GetTeacherById(id);
+            if (teacher != null)
+            {
+                await _teacherRepository.DeleteTeacher(teacher);
+            }
+            else
+            {
+                throw new KeyNotFoundException("Teacher not found.");
+            }
+        }
+
+        public async Task<Teacher> GetTeacherById(Guid id)
+        {
+            return await _teacherRepository.GetTeacherById(id);
+        }
+
+        public async Task AddTeacher(Teacher teacherDto)
+        {
+            var teacher = new Teacher
+            {
+                Id = Guid.NewGuid(), // Tạo GUID mới
+                Name = teacherDto.Name,
+                Email = teacherDto.Email,
+                phoneNumber = teacherDto.phoneNumber,
+                SubjectID = teacherDto.SubjectID
+            };
+
+            await _teacherRepository.AddTeacher(teacher);
+        }
+
+        //temporary
+       
+
+
+
     }
 }
