@@ -37,6 +37,13 @@ namespace SqlServerPlugin
             await _dbContext.SaveChangesAsync();
         }
 
+        public async Task<Score> GetScoreByIdAsync(Guid id)
+        {
+            return await _dbContext.Scores.FindAsync(id);
+        }
+
+        
+
 
     }
 }

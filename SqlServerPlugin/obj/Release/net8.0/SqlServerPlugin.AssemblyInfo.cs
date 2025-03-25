@@ -12,9 +12,9 @@ using System;
 using System.Reflection;
 
 [assembly: System.Reflection.AssemblyCompanyAttribute("SqlServerPlugin")]
-[assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
+[assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+170b2a11da5aa4e52c69570d9d023eb874a533c7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cc78841df0163f48faa9bc63a991db2fbd691fa7")]
 [assembly: System.Reflection.AssemblyProductAttribute("SqlServerPlugin")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SqlServerPlugin")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

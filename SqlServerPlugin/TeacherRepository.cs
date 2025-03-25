@@ -21,5 +21,29 @@ namespace SqlServerPlugin
             return _dbContext.Teachers.ToList();
         }
 
+        public async Task<Teacher> GetTeacherById(Guid id)
+        {
+            return _dbContext.Teachers.Find(id);
+        }
+
+        public async Task DeleteTeacher(Teacher teacher)
+        {
+            _dbContext.Teachers.Remove(teacher);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task AddTeacher(Teacher teacher)
+        {
+            await _dbContext.Teachers.AddAsync(teacher);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public Task GetUserByUsernameAsync(object username)
+        {
+            throw new NotImplementedException();
+        }
+
+        
     }
+
 }
